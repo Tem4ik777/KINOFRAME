@@ -1,53 +1,51 @@
-/* ============================================================
-   script.js — ВЕСЬ JAVASCRIPT САЙТА
-   Здесь всего три задачи:
-   1. Бургер-меню на телефоне
-   2. Эффект появления блоков при прокрутке
-   3. Плавная подсветка активного пункта меню
-   ============================================================ */
+function nextMenuState(isOpen, action) {
+  if (action === 'toggle') {
+    return !isOpen;
+  }
+  return false;
+}
 
+if (typeof module !== 'undefined') {
+  module.exports = { nextMenuState };
+}
 
-/* ------------------------------------------------------------
-   ЗАДАЧА 1. БУРГЕР-МЕНЮ (только на телефоне)
-   По клику на «полоски» меню выезжает, по второму клику прячется.
-   ------------------------------------------------------------ */
-const burger = document.getElementById('burger');   // кнопка с полосками
-const mainNav = document.getElementById('mainNav'); // выпадающая панель меню
+if (typeof document !== 'undefined') {
+  const burger = document.getElementById('burger');
+  const mainNav = document.getElementById('mainNav');
 
-burger.addEventListener('click', () => {
-  // toggle = переключить: если класс есть — убрать, если нет — добавить
-  burger.classList.toggle('open');
-  mainNav.classList.toggle('open');
-});
+  function updateMenu(action) {
+    const isOpen = nextMenuState(burger.getAttribute('aria-expanded') === 'true', action);
+    burger.classList.toggle('open', isOpen);
+    mainNav.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
+    burger.setAttribute('aria-label', isOpen ? 'Закрыть меню' : 'Открыть меню');
+  }
 
-// Клик по любому пункту меню — закрыть меню (удобно на телефоне)
-mainNav.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    burger.classList.remove('open');
-    mainNav.classList.remove('open');
+  burger.addEventListener('click', () => updateMenu('toggle'));
+  mainNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => updateMenu('close'));
   });
-});
-
-
-/* ------------------------------------------------------------
-   ЗАДАЧА 2. ЭФФЕКТ ПОЯВЛЕНИЯ БЛОКОВ ПРИ ПРОКРУТКЕ
-   Каждый элемент с классом .reveal в HTML изначально прозрачный
-   (см. css/style.css, раздел 6). Когда блок доезжает до экрана,
-   мы добавляем ему класс .visible — и он плавно проявляется.
-   ------------------------------------------------------------ */
-const revealElements = document.querySelectorAll('.reveal');
-
-// IntersectionObserver — «наблюдатель», который следит,
-// появился ли элемент на экране (на 15% и больше)
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    // Если элемент попал в видимую область экрана
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible'); // показать
-      observer.unobserve(entry.target);      // больше не наблюдать (анимация разовая)
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') {
+      updateMenu('close');
+      burger.focus();
     }
   });
-}, { threshold: 0.15 }); // срабатывать, когда видно 15% блока
 
-// Подключаем наблюдателя ко всем элементам .reveal
-revealElements.forEach(el => observer.observe(el));
+  const revealElements = document.querySelectorAll('.reveal');
+
+  // IntersectionObserver — «наблюдатель», который следит,
+  // появился ли элемент на экране (на 15% и больше)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      // Если элемент попал в видимую область экрана
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible'); // показать
+        observer.unobserve(entry.target);      // больше не наблюдать (анимация разовая)
+      }
+    });
+  }, { threshold: 0.15 }); // срабатывать, когда видно 15% блока
+
+  // Подключаем наблюдателя ко всем элементам .reveal
+  revealElements.forEach(el => observer.observe(el));
+}
