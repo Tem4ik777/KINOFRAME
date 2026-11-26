@@ -1,0 +1,530 @@
+/* ============================================================
+   style.css — ВСЕ СТИЛИ САЙТА
+   Структура файла:
+   1. ПЕРЕМЕННЫЕ (цвета и настройки)          — :root
+   2. БАЗОВЫЕ СТИЛИ (обнуление, шрифт, фон)  — *, body
+   3. ПЛЁНОЧНОЕ ЗЕРНО                       — body::after
+   4. ШАПКА                                 — .site-header, .logo, .main-nav, .burger
+   5. ПЕРВЫЙ ЭКРАН (HERO)                   — .hero, .marquee
+   6. ОБЩИЕ СТИЛИ СЕКЦИЙ                    — .section, .section-title, .reveal
+   7. О НАС                                 — .about-grid, .about-card
+   8. УСЛУГИ                                — .service-list, .service-row
+   9. РАБОТЫ                                — .works-grid, .work-card
+   10. ПОДВАЛ                               — .site-footer
+   11. АДАПТАЦИЯ ПОД ТЕЛЕФОН                — @media
+   ============================================================ */
+
+
+/* ============================================================
+   1. ПЕРЕМЕННЫЕ — меняйте цвета и радиусы здесь, в одном месте.
+   --accent — единственный цветной акцент сайта (кнопки, номера, hover).
+   ============================================================ */
+:root {
+  --bg:        #000000;   /* фон всего сайта — чисто чёрный */
+  --text:      #ffffff;   /* основной цвет текста — белый */
+  --muted:     rgba(255, 255, 255, .55);  /* приглушённый текст (подписи) */
+  --line:      rgba(255, 255, 255, .18);  /* пунктирные линии-разделители */
+  --accent:    #fa3b41;   /* красно-коралловый акцент */
+  --radius:    .75rem;    /* скругление углов карточек */
+  --pad:       clamp(1.25rem, 4vw, 4rem); /* боковые отступы (автоматически меняются под ширину экрана) */
+}
+
+
+/* ============================================================
+   2. БАЗОВЫЕ СТИЛИ
+   ============================================================ */
+
+/* Убираем стандартные отступы у всех элементов */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* padding не увеличивает размер блока */
+}
+
+html {
+  scroll-behavior: smooth; /* плавная прокрутка к якорям (#about и т.д.) */
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+
+  /* Шрифты. Первый в списке — основной, остальные — запасные,
+     если основного нет на компьютере посетителя.
+     ЗАМЕНИТЕ: можно подключить любой шрифт через Google Fonts
+     и указать его первым (инструкция внизу файла). */
+  font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
+  line-height: 1.5;
+
+  /* Скрываем горизонтальную полосу прокрутки — за пределы не выходит */
+  overflow-x: hidden;
+}
+
+/* Все ссылки по умолчанию: белые, без подчёркивания */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* ============================================================
+   3. ПЛЁНОЧНОЕ ЗЕРНО — декоративный слой поверх всего сайта.
+   Сделан кодом (SVG-шум), поэтому никакие картинки не нужны.
+   Если зерно не нужно — просто удалите этот блок целиком.
+   ============================================================ */
+body::after {
+  content: "";
+  position: fixed;    /* привязан к экрану, не двигается при прокрутке */
+  inset: 0;
+  pointer-events: none; /* не мешает кликать по ссылкам */
+  z-index: 999;         /* поверх всех элементов */
+  opacity: .07;         /* почти прозрачное — просто текстура */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+
+/* ============================================================
+   4. ШАПКА САЙТА
+   ============================================================ */
+.site-header {
+  position: fixed;      /* всегда наверху экрана */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  display: flex;                 /* элементы в ряд */
+  align-items: center;
+  justify-content: space-between; /* лого слева, меню справа */
+  padding: 1rem var(--pad);
+
+  /* Полупрозрачный чёрный фон + размытие, чтобы шапка
+     читалась поверх любого контента */
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Логотип. Буква O подсвечена акцентом (см. <span>O</span> в HTML) */
+.logo {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: .12em; /* разрядка букв */
+}
+.logo span { color: var(--accent); }
+
+/* Меню */
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* расстояние между пунктами */
+}
+
+/* Обычные пункты меню — полупрозрачные, при наведении ярче */
+.main-nav a {
+  font-size: .8rem;
+  text-transform: uppercase; /* ВСЕ БУКВЫ ЗАГЛАВНЫЕ */
+  letter-spacing: .14em;
+  color: var(--muted);
+  transition: color .25s ease; /* плавная смена цвета */
+}
+.main-nav a:hover { color: var(--text); }
+
+/* Кнопка «Обсудить проект» в меню — с пунктирной рамкой */
+.main-nav .nav-cta {
+  color: var(--text);
+  border: 1px dashed var(--line);
+  padding: .55rem 1.1rem;
+  transition: border-color .25s ease, color .25s ease;
+}
+.main-nav .nav-cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Кнопка-бургер: видна ТОЛЬКО на телефоне (см. раздел 11) */
+.burger {
+  display: none; /* на компьютере скрыта */
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .5rem;
+}
+.burger span {
+  display: block;
+  width: 26px;
+  height: 2px;
+  background: var(--text);
+  transition: transform .3s ease, opacity .3s ease;
+}
+
+
+/* ============================================================
+   5. ПЕРВЫЙ ЭКРАН (HERO)
+   ============================================================ */
+.hero {
+  min-height: 100vh;      /* высота не меньше экрана */
+  display: flex;
+  flex-direction: column; /* заголовок сверху, бегущая строка снизу */
+  justify-content: center;
+  position: relative;
+  padding: 0 var(--pad);
+}
+
+.hero-inner { max-width: 1200px; }
+
+/* Маленькая строка над заголовком */
+.hero-kicker {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .3em;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+/* Огромный заголовок. clamp() делает размер гибким:
+   от 3rem на телефоне до 9rem на большом мониторе */
+.hero-title {
+  font-size: clamp(2.52rem, 4vw, 9.5rem);
+  line-height: .92;       /* очень плотная строка */
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+}
+/* Каждое слово — в своей строке (display: block у <span>) */
+.hero-title span { display: block; }
+
+/* Слоган под заголовком */
+.hero-sub {
+  font-size: clamp(1.5rem, 1.25vw, 1.25rem);
+  color: var(--muted);
+  max-width: 34rem;
+  margin-bottom: 1rem;
+}
+
+.hero-meta {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .2em;
+  color: var(--muted);
+}
+
+/* Бегущая строка внизу первого экрана */
+.marquee {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--line);
+  padding: .9rem 0;
+  overflow: hidden; /* скрывает текст, уехавший за край */
+}
+.marquee-track {
+  display: flex;
+  width: max-content; /* ширина по содержимому, чтобы текст мог ехать */
+  /* Анимация «бегущей строки»: описана в разделе @keyframes marquee */
+  animation: marquee 28s linear infinite;
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: var(--muted);
+  white-space: nowrap; /* текст не переносится на новую строку */
+}
+/* Настройка самой анимации: текст едет слева направо по кругу */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); } /* -50% — ровно одна копия текста */
+}
+
+
+/* ============================================================
+   6. ОБЩИЕ СТИЛИ СЕКЦИЙ
+   ============================================================ */
+.section {
+  padding: clamp(4rem, 10vw, 8rem) var(--pad); /* вертикальные отступы секций */
+  max-width: 1400px;
+  margin: 0 auto; /* центрируем секцию */
+}
+
+/* Заголовки секций («О нас», «Услуги», ...) */
+.section-title {
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  text-transform: uppercase;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 3rem;
+  /* пунктирное подчёркивание заголовка — характерная деталь стиля */
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 1.5rem;
+}
+
+/* Эффект появления при прокрутке.
+   .reveal — скрытое состояние, .reveal.visible — видимое.
+   Класс .visible добавляет script.js, когда блок доезжает до экрана. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px); /* сдвинут вниз на 28px */
+  transition: opacity .8s ease, transform .8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0); /* встаёт на место */
+}
+
+
+/* ============================================================
+   7. О НАС — две карточки рядом
+   ============================================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 колонки */
+  gap: 2rem;
+}
+
+.about-card {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  transition: border-color .3s ease;
+}
+.about-card:hover { border-color: var(--accent); } /* при наведении рамка краснеет */
+
+.about-card h3 {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  margin-bottom: .4rem;
+}
+.about-name {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
+}
+.about-card p:not(.about-name) {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   8. УСЛУГИ — строки с нумерацией
+   ============================================================ */
+.service-list { border-top: 1px dashed var(--line); }
+
+/* Одна строка услуги */
+.service-row {
+  display: flex;
+  align-items: baseline; /* номер и текст выровнены по нижней линии текста */
+  gap: 2rem;
+  padding: 1.8rem 0;
+  border-bottom: 1px dashed var(--line);
+  transition: padding-left .3s ease; /* плавный отъезд вправо при наведении */
+}
+/* При наведении на услугу она чуть съезжает вправо */
+.service-row:hover { padding-left: 1.2rem; }
+
+/* Номер услуги 01, 02, ... */
+.service-num {
+  font-size: .85rem;
+  color: var(--muted);
+  min-width: 2.5rem; /* фиксированное место, чтобы текст ровно стоял */
+  transition: color .3s ease;
+}
+.service-row:hover .service-num { color: var(--accent); } /* номер краснеет */
+
+.service-row h3 {
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  text-transform: uppercase;
+  margin-bottom: .35rem;
+}
+.service-row p { color: var(--muted); max-width: 42rem; }
+
+
+/* ============================================================
+   9. РАБОТЫ — сетка карточек портфолио
+   ============================================================ */
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* сколько влезет */
+  gap: 1.5rem;
+}
+
+/* Карточка работы. Соотношение сторон 3:2 — удобно для фото и кадров. */
+.work-card {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius);
+  overflow: hidden; /* фото не вылезет за скруглённые углы */
+  background: #0d0d0d;
+}
+
+/* Состояние-заглушка (пока вы не добавили своё фото):
+   пунктирная рамка и текст-подсказка по центру.
+   Уберётся само, как только внутри появится настоящее фото. */
+.work-card.is-empty {
+  border: 1px dashed var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.work-hint {
+  text-align: center;
+  font-size: .75rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Как только вставите фото: оно растянется на всю карточку */
+.work-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* обрезает фото, не растягивая */
+  /* Лёгкая «киношная» обработка: чуть приподнятая яркость и контраст.
+     Удалите строку ниже, если хотите чистые цвета. */
+  filter: contrast(1.08) brightness(1.05);
+  transition: transform .5s ease; /* плавное увеличение при наведении */
+}
+.work-card:hover img { transform: scale(1.04); }
+
+/* Подпись внизу карточки — поверх фото */
+.work-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.2rem 1.4rem;
+  /* градиент делает низ карточки темнее, чтобы текст читался */
+  background: linear-gradient(to top, rgba(0,0,0,.85), transparent);
+}
+.work-caption h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+.work-caption span {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   10. ПОДВАЛ САЙТА
+   ============================================================ */
+.site-footer {
+  border-top: 1px dashed var(--line);
+  padding: clamp(4rem, 10vw, 7rem) var(--pad) 2.5rem;
+  text-align: center;
+}
+
+/* Огромная фраза в подвале */
+.footer-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+  text-transform: uppercase;
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.5rem;
+}
+
+/* Телефоны — крупные, кликабельные */
+.footer-phones {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem 3rem;
+  margin-bottom: 2.5rem;
+}
+.footer-phones a {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: var(--muted);
+  transition: color .25s ease;
+}
+.footer-phones a:hover { color: var(--accent); }
+
+/* Соцсети: иконки SVG + подписи */
+.footer-social {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+.footer-social a {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: var(--muted);
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  transition: color .25s ease;
+}
+.footer-social a:hover { color: var(--accent); }
+.footer-social svg { display: block; }
+
+/* Мелкая строка копирайта в самом низу */
+.footer-copy {
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: .6;
+}
+
+
+/* ============================================================
+   11. АДАПТАЦИЯ ПОД ТЕЛЕФОН (экран уже 760px и меньше)
+   ============================================================ */
+@media (max-width: 760px) {
+
+  /* Бургер виден, обычное меню прячется и превращается в выпадающую панель */
+  .burger { display: flex; }
+
+  .main-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    /* ВАЖНО: высота задаётся через dvh (от высоты экрана), а не через
+       top+bottom — из-за размытия фона шапки панель иначе «теряла» фон */
+    height: 100dvh;
+    width: min(75vw, 320px); /* панель шириной 75% экрана */
+    flex-direction: column;  /* пункты друг под другом */
+    align-items: flex-start;
+    gap: 1.6rem;
+    padding: 5rem 2rem;
+    background: #0a0a0a;
+    border-left: 1px dashed var(--line);
+
+    /* Скрытое состояние: сдвинута за правый край */
+    transform: translateX(100%);
+    transition: transform .35s ease;
+  }
+  /* Открытое состояние меню (класс добавляет script.js) */
+  .main-nav.open { transform: translateX(0); }
+
+  /* Когда меню открыто — бургер превращается в крестик */
+  .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .burger.open span:nth-child(2) { opacity: 0; }
+  .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Секция «О нас»: карточки друг под другом */
+  .about-grid { grid-template-columns: 1fr; }
+
+  /* Услуги: номер над текстом */
+  .service-row { flex-direction: column; gap: .5rem; }
+}
+
+
+/* ============================================================
+   КАК ПОДКЛЮЧИТЬ СВОЙ ШРИФТ (по желанию):
+   1. Зайдите на fonts.google.com, выберите шрифт (например, "Oswald").
+   2. Вставьте в <head> файла index.html строку вида:
+      <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+   3. Ниже, в body, замените список шрифтов на 'Oswald', sans-serif
+   ============================================================ */
